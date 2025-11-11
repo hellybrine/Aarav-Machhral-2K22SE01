@@ -9,7 +9,7 @@
 
 Build a working application that enables college students to recognize their peers, allocate monthly credits, and redeem earned rewards. The platform should encourage appreciation and engagement across student communities — a simple, transparent system for celebrating contributions and converting recognition into tangible value.
 
-Use any language, framework, or database (e.g., Flask/FastAPI, Express, Spring Boot, Django, Go, etc.) of your choice.
+Use Python or Java as your programming language. You can choose any framework (e.g., Flask, FastAPI, Django for Python; Spring Boot for Java) and any database of your choice.
 
 ## Core Functionality
 
