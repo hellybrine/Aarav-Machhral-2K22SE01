@@ -1,206 +1,185 @@
-# Boostly
+# Project Documentation
 
-Boostly is a full-stack application that enables college students to recognize peers, send monthly credits, endorse recognitions, and redeem earned credits for vouchers. It is built with a **React (Vite) frontend**, **Flask backend**, **SQLite database**, and **Docker** for deployment.
+## 1. Introduction
 
----
+This project implements **Boostly**, a peer recognition platform designed for college students. The system allows students to recognize others by sending credits, endorse existing recognitions, and redeem earned credits for vouchers. It encourages positive interactions, rewards contribution, and provides transparency within student communities.
 
-## 🚀 Getting Started
-
-You can run Boostly using **Docker (recommended)** or run both the backend and frontend manually.
+The final deliverable is a fully functional, containerized full-stack web application built with React, Flask, SQLite, and Docker.
 
 ---
 
-# Option A — Run with Docker (Recommended)
+## 2. Objectives
 
-## Prerequisites
-- Docker Desktop  
-- Docker Compose
+The primary goals of the project were:
 
-## Run the Application
+1. Build an application where students can:
 
-```bash
-cd src
-docker compose build --no-cache
-docker compose up
-````
+   * Send recognitions with a credit transfer.
+   * Endorse existing recognition entries.
+   * Redeem accumulated credits for vouchers.
 
-### Services
+2. Enforce core business rules:
 
-| Service  | URL                                            |
-| -------- | ---------------------------------------------- |
-| Frontend | [http://localhost:5173](http://localhost:5173) |
-| Backend  | [http://localhost:5000](http://localhost:5000) |
+   * Monthly credit allocation.
+   * Monthly sending limit.
+   * Prevention of self-recognition.
+   * Credit balance validation.
+   * Fixed conversion rate for voucher redemption.
 
-### Initialize Sample Data
+3. Implement additional “step-up” functionality:
 
-```bash
-curl -X POST http://localhost:5000/init
-```
+   * Monthly credit reset with carry-forward rules.
+   * Leaderboard ranked by credits, recognitions, and endorsements.
 
----
+4. Deliver the application with:
 
-# Option B — Run Locally (Without Docker)
-
-## Backend — Flask
-
-```bash
-cd backend
-pip install -r requirements.txt
-python app.py
-```
-
-Backend runs at:
-**[http://localhost:5000](http://localhost:5000)**
-
-## Frontend — React + Vite
-
-```bash
-cd frontend
-npm install
-npm run dev
-```
-
-Frontend runs at:
-**[http://localhost:5173](http://localhost:5173)**
+   * Complete documentation.
+   * Clean API design.
+   * Test cases.
+   * Dockerized setup for easy deployment.
 
 ---
 
-# 📁 Project Structure
+## 3. Key Features Implemented
 
-```
-project/
-│
-├── backend/         # Flask backend
-├── frontend/        # React (Vite) frontend
-├── src/             # Docker orchestration (docker-compose)
-└── README.md
-```
+### 3.1 Recognition System
 
----
+Students can send credits along with a message. The system enforces:
 
-# 📘 API Reference
+* Monthly credit limit of 100.
+* Cannot send to oneself.
+* Credits cannot exceed current balance.
+* Validation of both sender and receiver IDs.
 
-**Base URL:** `http://localhost:5000`
+### 3.2 Endorsements
 
----
+Users can endorse existing recognition entries.
+Endorsements increase an integer counter without affecting credit balances.
 
-## 1. Send Recognition
+### 3.3 Redemption
 
-**POST** `/recognitions`
+Students can redeem credits:
 
-**Body**
+* Credits are permanently deducted.
+* Voucher value is calculated at ₹5 per credit.
+* System generates a unique voucher code.
 
-```json
-{
-  "from_id": 1,
-  "to_id": 2,
-  "credits": 10,
-  "message": "Great help on project!"
-}
-```
+### 3.4 Leaderboard
 
----
+Displays top recipients based on:
 
-## 2. Endorse Recognition
+* Total credits received.
+* Number of recognitions.
+* Total endorsements.
+* Tie-breaking by student ID.
 
-**POST** `/recognitions/{id}/endorse`
+### 3.5 Monthly Reset Logic
 
----
-
-## 3. Redeem Credits
-
-**POST** `/students/{id}/redeem`
-
-**Body**
-
-```json
-{ "credits": 20 }
-```
+* Students receive 100 fresh credits each month.
+* Up to 50 unused credits can be carried forward.
+* Sending limit resets monthly.
 
 ---
 
-## 4. Get Student Details
+## 4. System Architecture
 
-**GET** `/students/{id}`
+### 4.1 Architectural Overview
 
----
+The system follows a **client–server architecture** consisting of:
 
-## 5. List All Students
+* **Frontend (React + Vite)**
+  Responsible for rendering the UI, sending API requests, and handling user interactions.
 
-**GET** `/students`
+* **Backend API (Flask)**
+  Exposes REST endpoints for data management, business logic, recognition creation, endorsements, and redemptions.
 
----
+* **Database (SQLite)**
+  Stores student profiles, recognitions, endorsements, and vouchers.
 
-## 6. Leaderboard
-
-**GET** `/leaderboard?limit=10`
-
----
-
-## 7. Initialize Sample Data
-
-**POST** `/init`
+* **Docker Containerization**
+  Used to ensure reproducible builds and isolate frontend and backend environments.
 
 ---
 
-# 🧪 Sample cURL Commands
+## 5. Technologies Used
 
-### Send a Recognition
+### 5.1 Frontend
 
-```bash
-curl -X POST http://localhost:5000/recognitions \
-  -H "Content-Type: application/json" \
-  -d '{"from_id":1,"to_id":2,"credits":10,"message":"Thanks!"}'
-```
+* **React** for UI development.
+* **Vite** as the build tool.
+* **Tailwind CSS** for styling.
+* **Axios** for API communication.
+* **Framer Motion** (optional) for UI animations.
 
-### Endorse
+### 5.2 Backend
 
-```bash
-curl -X POST http://localhost:5000/recognitions/1/endorse
-```
+* **Python 3.13**
+* **Flask** for REST API development.
+* **Flask-SQLAlchemy** as ORM.
+* **Flask-CORS** for cross-origin requests.
+* **SQLite** for local data persistence.
 
-### Redeem Credits
+### 5.3 Deployment and Infrastructure
 
-```bash
-curl -X POST http://localhost:5000/students/2/redeem \
-  -H "Content-Type: application/json" \
-  -d '{"credits":20}'
-```
-
-### Leaderboard
-
-```bash
-curl http://localhost:5000/leaderboard
-```
+* **Docker** for containerization.
+* **Docker Compose** for orchestration of multi-container application.
+* **Node.js 20-alpine** base image for frontend build.
+* **Python 3.13-slim** base image for backend.
 
 ---
 
-# ✨ Features
+## 6. Development Workflow
 
-* Send recognition with credits
-* Monthly credit sending limit
-* Prevent self-recognition
-* Endorsement system
-* Credit redemption (₹5 per credit)
-* Voucher generation
-* Leaderboard ranking
-* Monthly credit reset with carry-forward
-* Dockerized setup
-* Functional frontend integrated with backend
+### 6.1 Backend Development
+
+The backend was developed first to define the core entities and business logic:
+
+* Students
+* Recognitions
+* Endorsements
+* Vouchers
+
+Using SQLAlchemy models allowed enforcement of rules directly at the application layer.
+API endpoints were implemented for CRUD-like operations, with monthly reset logic built into helper functions.
+
+### 6.2 Frontend Development
+
+The frontend was built using React with a clean component structure:
+
+* Dashboard
+* Recognize Page
+* Leaderboard
+* Redeem Page
+
+The UI consumes backend APIs and updates the interface dynamically.
+Tailwind CSS was used extensively to ensure a consistent style.
+
+### 6.3 Docker Integration
+
+Dockerfiles were created for both frontend and backend.
+These ensured consistent builds and eliminated environment configuration issues.
+Finally, docker-compose orchestrates the application to run as a unified stack.
 
 ---
 
-# 🔄 Workflow Overview
+## 7. Testing Approach
 
-1. Start backend and frontend (Docker or local).
-2. Initialize sample data using:
+Manual and API-based testing was done for:
 
-   ```
-   POST /init
-   ```
-3. Use the frontend to:
+* Recognition creation.
+* Validation error handling.
+* Endorsement increments.
+* Credit redemption flow.
+* Leaderboard ranking.
+* Monthly reset behavior.
+* Docker runtime validation.
 
-   * Send recognitions
-   * Endorse recognitions
-   * Redeem credits
-   * View leaderboard
+Test cases were documented separately under `test-cases/`.
+
+---
+
+## 8. Conclusion
+
+The project successfully delivers a complete, functional, full-stack application that matches the specified requirements. The solution includes a robust backend, responsive frontend, complete Dockerized environment, and clean API documentation.
+
+Boostly demonstrates the implementation of business rules, user-friendly interactions, and clear architectural separation between components. The system is ready for demonstration, further enhancements, or deployment to cloud services.
